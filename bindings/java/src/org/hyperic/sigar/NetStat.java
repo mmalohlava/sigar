@@ -23,6 +23,7 @@ public class NetStat implements java.io.Serializable {
     protected int[] tcpStates;
     protected int tcpInboundTotal, tcpOutboundTotal;
     protected int allInboundTotal, allOutboundTotal;
+    protected int udpInboundTotal, udpOutboundTotal;
 
     native void stat(Sigar sigar, int flags,
                      byte[] address, long port) throws SigarException;
@@ -32,7 +33,7 @@ public class NetStat implements java.io.Serializable {
     public void stat(Sigar sigar) throws SigarException {
         int flags =
             NetFlags.CONN_SERVER | NetFlags.CONN_CLIENT |
-            NetFlags.CONN_TCP;
+            NetFlags.CONN_TCP | NetFlags.CONN_UDP;
 
         stat(sigar, flags, null, -1);
     }
@@ -61,6 +62,14 @@ public class NetStat implements java.io.Serializable {
 
     public int getAllOutboundTotal() {
         return this.allOutboundTotal;
+    }
+    
+    public int getUdpInboundTotal() {
+        return this.udpInboundTotal;
+    }
+    
+    public int getUdpOutboundTotal() {
+        return this.udpOutboundTotal;
     }
 
     public int[] getTcpStates() {

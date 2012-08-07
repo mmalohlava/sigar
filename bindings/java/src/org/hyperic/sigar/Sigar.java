@@ -821,6 +821,11 @@ public class Sigar implements SigarProxy {
         throws SigarException {
         return Tcp.fetch(this);
     }
+    
+    public Udp getUdp() 
+        throws SigarException {
+        return Udp.fetch(this);
+    }
 
     public NfsClientV2 getNfsClientV2()
         throws SigarException {
