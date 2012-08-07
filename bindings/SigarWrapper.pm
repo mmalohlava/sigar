@@ -1236,6 +1236,12 @@ use vars qw(%classes %cmds);
     ],
     #only for jfieldId cache/setters
     NetStat => [
+      { 
+         name => 'udp_inbound_total', type => 'Int',
+      },
+      { 
+         name => 'udp_outbound_total', type => 'Int',
+      },
       {
          name => 'tcp_inbound_total', type => 'Int',
       },
@@ -1300,6 +1306,39 @@ use vars qw(%classes %cmds);
          desc => '',
          plat => ''
       },
+    ],
+    Udp => [
+      {
+        name => 'in_packets', type => 'Long',
+        desc => 'A nmuber of received UDP packets.',
+        plat => '',
+      },
+      {
+        name => 'out_packets', type => 'Long',
+        desc => 'A number of sent UDP packets.',
+        plat => '',
+      },
+      {
+        name => 'in_errs', type => 'Long',
+        desc => 'Packet receive errors.',
+        plat => '',
+      },
+      {
+        name => 'in_unknown', type => 'Long',
+        desc => 'Received UDP packets to unknown port.',
+        plat => '',
+      },
+      {
+        name => 'in_buffer_errs', type => 'Int',
+        desc => 'A number of receive buffer errors.',
+        plat => '',
+      },
+      {
+        name => 'out_buffer_errs', type => 'Int',
+        desc => 'A number of send buffer errors.',
+        plat => '',
+      },
+
     ],
     NfsClientV2 => $nfs_v2,
     NfsServerV2 => $nfs_v2,
@@ -1629,6 +1668,11 @@ while (my($subclass, $superclass) = each %extends) {
        Linux   => 'cat /proc/net/snmp',
        Solaris => 'netstat -s -P tcp',
     },
+    Udp => {
+       Linux   => 'cat /proc/net/snmp',
+       Solaris => 'netstat -s -P udp',
+    },
+
 );
 
 sub warning_comment {

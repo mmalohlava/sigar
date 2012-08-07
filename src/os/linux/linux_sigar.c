@@ -2192,6 +2192,46 @@ sigar_tcp_get(sigar_t *sigar,
     return status;
 }
 
+#define SNMP_UDP_PREFIX "Udp: "
+SIGAR_DECLARE(int)
+sigar_udp_get(sigar_t *sigar,
+              sigar_udp_t *udp)
+{
+    FILE *fp;
+    char buffer[1024], *ptr=buffer;
+    int status = SIGAR_ENOENT;
+
+    if (!(fp = fopen(PROC_FS_ROOT "net/snmp", "r"))) {
+        return errno;
+    }
+
+    while (fgets(buffer, sizeof(buffer), fp)) {
+        if (strnEQ(buffer, SNMP_UDP_PREFIX, sizeof(SNMP_UDP_PREFIX)-1)) {
+            if (fgets(buffer, sizeof(buffer), fp)) {
+                status = SIGAR_OK;
+                break;
+            }
+        }
+    }
+
+    fclose(fp);
+    
+    if (status == SIGAR_OK) {
+        /* assuming field order, same in 2.2, 2.4, 2.6, and 3.0 kernels */ 
+        /* Udp: InDatagrams NoPorts InErrors OutDatagrams RcvbufErrors SndbufErrors */
+
+        ptr = sigar_skip_multiple_token(ptr, 1);
+        udp->in_packets     = sigar_strtoull(ptr);
+        udp->in_unknown     = sigar_strtoull(ptr);
+        udp->in_errs        = sigar_strtoull(ptr);
+        udp->out_packets    = sigar_strtoull(ptr);
+        udp->in_buffer_errs = sigar_strtoull(ptr);
+        udp->out_buffer_errs= sigar_strtoull(ptr);
+    }
+
+    return status;
+}
+
 static int sigar_proc_nfs_gets(char *file, char *tok,
                                char *buffer, size_t size)
 {

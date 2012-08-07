@@ -741,6 +741,10 @@ sigar_net_connection_walk(sigar_net_connection_walker_t *walker);
 
 typedef struct {
     int tcp_states[SIGAR_TCP_UNKNOWN];
+    // a number of UDP server sockets
+    sigar_uint32_t udp_inbound_total;
+    // a number of UDP client sockets
+    sigar_uint32_t udp_outbound_total;
     sigar_uint32_t tcp_inbound_total;
     sigar_uint32_t tcp_outbound_total;
     sigar_uint32_t all_inbound_total;
@@ -777,6 +781,27 @@ SIGAR_DECLARE(int)
 sigar_tcp_get(sigar_t *sigar,
               sigar_tcp_t *tcp);
 
+/* UDP-MIB */
+typedef struct {
+    /* number of received packets */
+    sigar_uint64_t in_packets;
+    /* number of sent packets */
+    sigar_uint64_t out_packets;
+    /* packets receive errors */
+    sigar_uint64_t in_errs;
+    /* packets to unknown port */
+    sigar_uint64_t in_unknown;
+    /* received buffer errors */
+    sigar_uint64_t in_buffer_errs;
+    /* send buffer errors */
+    sigar_uint64_t out_buffer_errs;
+} sigar_udp_t;
+
+SIGAR_DECLARE(int)
+sigar_udp_get(sigar_t *sigar,
+              sigar_udp_t *udp);
+
+/* NFS */
 typedef struct {
     sigar_uint64_t null;
     sigar_uint64_t getattr;

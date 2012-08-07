@@ -821,14 +821,18 @@ static int net_stat_walker(sigar_net_connection_walker_t *walker,
         }
     }
     else if (conn->type == SIGAR_NETCONN_UDP) {
-        /*XXX*/
+        if (sigar_cache_find(listen_ports, conn->local_port)) {
+            getter->netstat->udp_inbound_total++;
+        } else {
+            getter->netstat->udp_outbound_total++;
+        }
     }
 
     getter->netstat->all_inbound_total =
-        getter->netstat->tcp_inbound_total;
+        getter->netstat->tcp_inbound_total + getter->netstat->udp_inbound_total;
 
     getter->netstat->all_outbound_total =
-        getter->netstat->tcp_outbound_total;
+        getter->netstat->tcp_outbound_total + getter->netstat->udp_outbound_total;
 
     return SIGAR_OK;
 }
