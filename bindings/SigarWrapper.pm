@@ -1310,7 +1310,7 @@ use vars qw(%classes %cmds);
     Udp => [
       {
         name => 'in_packets', type => 'Long',
-        desc => 'A nmuber of received UDP packets.',
+        desc => 'A number of received UDP packets.',
         plat => '',
       },
       {
@@ -1671,6 +1671,7 @@ while (my($subclass, $superclass) = each %extends) {
     Udp => {
        Linux   => 'cat /proc/net/snmp',
        Solaris => 'netstat -s -P udp',
+       Win32   => '???'
     },
 
 );

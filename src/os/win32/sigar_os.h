@@ -416,6 +416,8 @@ typedef DWORD (CALLBACK *iphlpapi_get_udpx_table)(PMIB_UDPEXTABLE *,
 
 typedef DWORD (CALLBACK *iphlpapi_get_tcp_stats)(PMIB_TCPSTATS);
 
+typedef DWORD (CALLBACK *iphlpapi_get_udp_stats)(PMIB_UDPSTATS);
+
 typedef DWORD (CALLBACK *iphlpapi_get_net_params)(PFIXED_INFO,
                                                   PULONG);
 
@@ -508,6 +510,7 @@ typedef struct {
     SIGAR_DLLFUNC(iphlpapi, get_tcpx_table);
     SIGAR_DLLFUNC(iphlpapi, get_udpx_table);
     SIGAR_DLLFUNC(iphlpapi, get_tcp_stats);
+	SIGAR_DLLFUNC(iphlpapi, get_udp_stats);
     SIGAR_DLLFUNC(iphlpapi, get_net_params);
     SIGAR_DLLFUNC(iphlpapi, get_adapters_info);
     SIGAR_DLLFUNC(iphlpapi, get_adapters_addrs);

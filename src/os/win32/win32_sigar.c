@@ -327,6 +327,7 @@ static sigar_iphlpapi_t sigar_iphlpapi = {
     { "AllocateAndGetTcpExTableFromStack", NULL },
     { "AllocateAndGetUdpExTableFromStack", NULL },
     { "GetTcpStatistics", NULL },
+	{ "GetUdpStatistics", NULL },
     { "GetNetworkParams", NULL },
     { "GetAdaptersInfo", NULL },
     { "GetAdaptersAddresses", NULL },
@@ -3191,6 +3192,39 @@ sigar_tcp_get(sigar_t *sigar,
     tcp->out_rsts = mib.dwOutRsts;
 
     return SIGAR_OK;
+}
+
+#define sigar_GetUdpStatistics \
+    sigar->iphlpapi.get_udp_stats.func
+
+SIGAR_DECLARE(int)
+sigar_udp_get(sigar_t *sigar,
+              sigar_udp_t *udp)
+{
+    MIB_UDPSTATS mib;
+    int status;
+
+    DLLMOD_INIT(iphlpapi, FALSE);
+
+    if (!sigar_GetUdpStatistics) {
+        return SIGAR_ENOTIMPL;
+    }
+
+    status = sigar_GetUdpStatistics(&mib);
+
+    if (status != NO_ERROR) {
+        return status;
+    }
+	
+	udp->in_packets  = mib.dwInDatagrams;  // The number of datagrams received.
+	udp->out_packets = mib.dwOutDatagrams; // The number of datagrams transmitted.
+	udp->in_errs     = mib.dwInErrors;     // The number of erroneous datagrams received. This number does not include the value contained by the dwNoPorts member.
+	udp->in_unknown  = mib.dwNoPorts;      // The number of datagrams received that were discarded because the port specified was invalid.
+	udp->in_buffer_errs  = -1;
+	udp->out_buffer_errs = -1;
+	// NOTE: This field is not transfered: dwNumAddrs -  The number of entries in the UDP listener table.
+
+	return SIGAR_OK;
 }
 
 SIGAR_DECLARE(int)
