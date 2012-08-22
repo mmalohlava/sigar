@@ -95,9 +95,11 @@
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
 #include <netinet/ip.h>
+#include <netinet/ip_var.h>
 #include <netinet/in_pcb.h>
 #include <netinet/tcp.h>
 #include <netinet/tcp_timer.h>
+#include <netinet/udp.h>
 #ifdef __NetBSD__
 #include <netinet/ip_var.h>
 #include <sys/lwp.h>
@@ -111,6 +113,7 @@
 #endif
 #include <netinet/tcp_var.h>
 #include <netinet/tcp_fsm.h>
+#include <netinet/udp_var.h>
 
 #define NMIB(mib) (sizeof(mib)/sizeof(mib[0]))
 
@@ -3217,6 +3220,31 @@ sigar_tcp_get(sigar_t *sigar,
         mib.tcps_rcvshort;
     tcp->out_rsts = -1; /* XXX mib.tcps_sndctrl - mib.tcps_closed; ? */
 
+    return SIGAR_OK;
+}
+
+SIGAR_DECLARE(int)
+sigar_udp_get(sigar_t *sigar,
+              sigar_udp_t *udp)
+{	
+	struct udpstat mib;
+#if !defined(UDPCTL_STATS) && (defined(__OpenBSD__) || defined(__NetBSD__))
+// FIXME: do nothing
+#else
+	int var[4] = { CTL_NET, PF_INET, IPPROTO_UDP, UDPCTL_STATS };
+	size_t len = sizeof(mib);
+
+	if (sysctl(var, NMIB(var), &mib, &len, NULL, 0) < 0) {
+	    return errno;
+	}		
+#endif
+	udp->in_packets  = mib.udps_ipackets;  // The number of datagrams received.
+	udp->out_packets = mib.udps_opackets;  // The number of datagrams transmitted.
+	udp->in_errs     = mib.udps_hdrops + mib.udps_badsum + mib.udps_badlen + mib.udps_fullsock;     // The number of erroneous datagrams received. NOTE: it is neccesary to check the implementation to know the attribute's semantics.
+	udp->in_unknown  = mib.udps_noport;    // The number of datagrams received that were discarded because the port specified was invalid.
+	udp->in_buffer_errs  = -1;
+	udp->out_buffer_errs = -1;
+	
     return SIGAR_OK;
 }
 
