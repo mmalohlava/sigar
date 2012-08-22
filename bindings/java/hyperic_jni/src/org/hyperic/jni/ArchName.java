@@ -33,9 +33,21 @@ public class ArchName {
         }
         return name;
     }
+    
+    public static String getGenuinePlatformBits() {
+    	return System.getProperty("sun.arch.data.model");
+    }
+    
+    public static String getPlatformBits() {
+    	return is64() ? "64" : "32";
+    }
+    
+    public static boolean is64bitDetectionSupressed() {    	
+    	return "true".equals(System.getProperty("sigar.suppress.64bit.arch.detection", "false"));    	
+    }
 
     public static boolean is64() {
-        return "64".equals(System.getProperty("sun.arch.data.model"));
+        return "64".equals(System.getProperty("sun.arch.data.model")) && !is64bitDetectionSupressed();
     }
 
     private static String getArchName() throws ArchNotSupportedException {

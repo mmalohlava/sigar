@@ -158,7 +158,8 @@
       <isfalse value="${jni.src}"/>
     </condition>
 
-    <echo message="jni.src=${jni.src}, jni.jdk.os=${jni.jdk.os}, ${sun.arch.data.model}-bit"/>
+    <echo message="BUILD INFO: jni.src=${jni.src}, jni.jdk.os=${jni.jdk.os}, ${sun.arch.data.model}-bit (suppressed: ${sigar.suppress.64bit.arch.detection})"/>
+    <echo message="NOTE: Java-based 64bit can be suppressed by command line ANT_OPTS=-Dsigar.suppress.64bit.arch.detection=true ant" />
 
     <javac srcdir="${jni.src.java}" destdir="${build}/classes" debug="true"
            source="1.4" target="1.4"
@@ -173,7 +174,7 @@
 
     <libarch/>
 
-    <echo>java.home=${jni.javahome}</echo>
+    <echo>JAVA HOME: java.home=${jni.javahome}</echo>
 
     <checksum file="${jni.javahome}/include/jni.h" property="jni.md5"/>
 

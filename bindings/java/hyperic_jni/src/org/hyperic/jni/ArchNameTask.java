@@ -33,7 +33,7 @@ public class ArchNameTask extends Task {
     public void execute() throws BuildException {
         String osArch = System.getProperty("os.arch");
         String osVers = System.getProperty("os.version");
-
+        
         if (getProject().getProperty("jni.dmalloc") != null) {
             ArchName.useDmalloc = true;
         }
@@ -48,12 +48,19 @@ public class ArchNameTask extends Task {
             return;
         }
 
-        System.out.println(archName);
+        System.out.println("ARCH INFO:");
+        System.out.println("    os.arch:     " + osArch);
+        System.out.println("    os.version:  " + osVers);
+        System.out.println("    jni.libarch: " + archName);
+        System.out.println("    is64bit:     " + ArchName.is64());
+        System.out.println("    is64bitDetectionSupressed: " + ArchName.is64bitDetectionSupressed());
         getProject().setProperty("jni.libarch", archName);
         getProject().setProperty("jni.libpre",
                                  ArchLoader.getLibraryPrefix());
         getProject().setProperty("jni.libext",
                                  ArchLoader.getLibraryExtension());
+        getProject().setProperty("jni.platform.bits", ArchName.getPlatformBits());
+        getProject().setProperty("jni.genuine.platform.bits", ArchName.getGenuinePlatformBits());
 
         String compiler;
         if (ArchLoader.IS_WIN32) {
@@ -119,13 +126,13 @@ public class ArchNameTask extends Task {
                 int minorVers = Integer.parseInt(osVers.substring(3,4));
                 boolean usingLatestSDK = (sdk.indexOf(version) != -1);
 
-                System.out.println("Using SDK=" + sdk);
+                System.out.println("NOTE: Using SDK=" + sdk);
                 if ((minorVers >= 6) && ArchName.is64() && usingLatestSDK) {
                     //64-bit 10.6 sdk does not support ppc64
                     //switch from universal build to i386 only
                     getProject().setProperty("jni.cc", "jni-cc");
                     getProject().setProperty("uni.arch", "i386");
-                    System.out.println("Note: SDK version does not support ppc64");
+                    System.out.println("NOTE: SDK version does not support ppc64");
                 }
 
                 prop = "osx.min";
@@ -134,7 +141,7 @@ public class ArchNameTask extends Task {
                     min = defaultMin;
                     getProject().setProperty(prop, min);
                 }
-                System.out.println("Using -mmacosx-version-min=" + min);
+                System.out.println("NOTE: Using -mmacosx-version-min=" + min);
             }
         }
         getProject().setProperty("jni.scmrev", getSourceRevision());
